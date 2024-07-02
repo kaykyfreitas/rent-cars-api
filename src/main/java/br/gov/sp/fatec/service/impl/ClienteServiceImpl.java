@@ -6,9 +6,12 @@ import br.gov.sp.fatec.domain.request.ClienteUpdateRequest;
 import br.gov.sp.fatec.domain.response.ClienteResponse;
 import br.gov.sp.fatec.repository.ClienteRepository;
 import br.gov.sp.fatec.service.ClienteService;
-import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,23 +21,49 @@ public class ClienteServiceImpl implements ClienteService {
     private final ClienteMapper clienteMapper;
 
     @Override
-    public ClienteResponse save(ClienteRequest clienteRequest) {
-        return null;
+    @Transactional
+    public ClienteResponse save(final ClienteRequest clienteRequest) {
+        final var cliente = this.clienteMapper.map(clienteRequest);
+
+        final var savedCliente = this.clienteRepository.save(cliente);
+
+        final var clienteResponse = this.clienteMapper.map(savedCliente);
+
+        return clienteResponse;
     }
 
     @Override
-    public ClienteResponse findById(Long id) {
-        return null;
+    @Transactional
+    public ClienteResponse findById(final Long id) {
+        return this.clienteMapper.map(this.clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."))
+        );
     }
 
     @Override
+    @Transactional
     public List<ClienteResponse> findAll() {
-        return List.of();
+        return this.clienteRepository.findAll().stream()
+                .map(this.clienteMapper::map)
+                .toList();
     }
 
     @Override
-    public void updateById(Long id, ClienteUpdateRequest clienteUpdateRequest) {}
+    @Transactional
+    public void updateById(final Long id, final ClienteUpdateRequest clienteUpdateRequest) {
+        final var saved = this.clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
+
+        final var updated = this.clienteMapper.map(clienteUpdateRequest);
+        updated.setId(saved.getId());
+
+        this.clienteRepository.save(updated);
+    }
 
     @Override
-    public void deleteById(Long id) {}
+    @Transactional
+    public void deleteById(final Long id) {
+        if (this.clienteRepository.existsById(id))
+            this.clienteRepository.deleteById(id);
+    }
 }

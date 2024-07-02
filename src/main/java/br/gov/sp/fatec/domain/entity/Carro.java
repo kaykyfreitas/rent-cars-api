@@ -1,11 +1,7 @@
 package br.gov.sp.fatec.domain.entity;
 
 import br.gov.sp.fatec.domain.enums.CarroStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,6 +15,17 @@ public class Carro {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "modelo", nullable = false)
+    private String modelo;
+
+    @Column(name = "marca", nullable = false)
+    private String marca;
+
+    @Column(name = "ano", nullable = false)
+    private Integer ano;
+
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private CarroStatus status;
+
 }

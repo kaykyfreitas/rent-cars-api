@@ -1,3 +1,15 @@
 package br.gov.sp.fatec.domain.response;
 
-public record AluguelResponse() {}
+import br.gov.sp.fatec.domain.enums.AluguelStatus;
+
+import java.util.Date;
+
+public record AluguelResponse(
+        Long id,
+        Date dataInicio,
+        Date dataFim,
+        Double valor,
+        AluguelStatus status,
+        Integer carroId,
+        Integer clienteId
+) {}
